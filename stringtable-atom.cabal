@@ -1,5 +1,6 @@
 Name:                stringtable-atom
 Version:             0.0.4
+Homepage:            http://github.com/audreyt/stringtable-atom/
 Category:            Data, Pugs
 Synopsis:            Memoize Strings as Atoms for fast comparison and sorting, with maps and sets
 Description:         Memoize Strings as Atoms for fast comparison and sorting, with maps and sets
@@ -12,7 +13,7 @@ Exposed-modules:     StringTable.Atom StringTable.AtomMap StringTable.AtomSet
 
 Build-Depends:       base, bytestring>=0.9.0.1, binary, containers
 Build-Type:          Simple
-Tested-With:         GHC==6.8.2, GHC==6.8.3
+Tested-With:         GHC==6.8.2, GHC==6.8.3, GHC==6.10
 
 extensions:          ForeignFunctionInterface, TypeSynonymInstances,
                      DeriveDataTypeable, FlexibleInstances,
