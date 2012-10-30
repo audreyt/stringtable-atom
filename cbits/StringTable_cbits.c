@@ -157,7 +157,7 @@ dump_to_file(void) {
                 if(ATOM_VALID(a)) {
                         fprintf(file,"%u:",ATOM_LEN(a));
                         print_quoted(file, ATOM_PTR(a),ATOM_LEN(a));
-                        fwrite("\n",1,1,file);
+                        if (fwrite("\n",1,1,file)) return;
                 }
         }
 }
@@ -168,8 +168,8 @@ dump_table(void) {
                 atom_t a = htable[i].atom;
                 if(ATOM_VALID(a)) {
                         printf("%p %u: ",ATOM_PTR(a),ATOM_LEN(a));
-                        fwrite(ATOM_PTR(a),1,ATOM_LEN(a),stdout);
-                        fwrite("\n",1,1,stdout);
+                        if (fwrite(ATOM_PTR(a),1,ATOM_LEN(a),stdout)) return;
+                        if (fwrite("\n",1,1,stdout)) return;
                 }
         }
 }

@@ -42,7 +42,6 @@ module StringTable.AtomSet  (
 
             -- * Map
 	    , map
-	    , mapMonotonic
 
             -- * Fold
             , fold
@@ -120,13 +119,15 @@ deleteFindMin x = (\(x, y) -> (unsafeIntToAtom x, MkAtomSet y)) (IS.deleteFindMi
 deleteFindMax :: AtomSet -> (Atom, AtomSet)
 deleteFindMax x = (\(x, y) -> (unsafeIntToAtom x, MkAtomSet y)) (IS.deleteFindMax (fromAtomSet x))
 maxView :: (Monad m) => AtomSet -> m (Atom, AtomSet)
-maxView x = liftM (\(x, y) -> (unsafeIntToAtom x, MkAtomSet y)) (IS.maxView (fromAtomSet x))
+maxView x = case IS.maxView (fromAtomSet x) of
+    Just (x, y) -> return (unsafeIntToAtom x, MkAtomSet y)
+    _ -> fail "No maxView"
 minView :: (Monad m) => AtomSet -> m (Atom, AtomSet)
-minView x = liftM (\(x, y) -> (unsafeIntToAtom x, MkAtomSet y)) (IS.minView (fromAtomSet x))
+minView x = case IS.minView (fromAtomSet x) of
+    Just (x, y) -> return (unsafeIntToAtom x, MkAtomSet y)
+    _ -> fail "No minView"
 map :: (Atom->Atom) -> AtomSet -> AtomSet
 map x y = MkAtomSet (IS.map ((\f -> fromAtom . f . unsafeIntToAtom) x) (fromAtomSet y))
-mapMonotonic :: (Atom->Atom) -> AtomSet -> AtomSet
-mapMonotonic = map
 fold :: (Atom -> b -> b) -> b -> AtomSet -> b
 fold x y z =  (IS.fold ((. unsafeIntToAtom) x) ( y) (fromAtomSet z))
 elems :: AtomSet -> [Atom]
