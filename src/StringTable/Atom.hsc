@@ -22,7 +22,8 @@ import Control.Monad
 import Data.Binary
 import Data.Binary.Get
 import Data.Binary.Put
-import Foreign
+import Foreign (peek)
+import System.IO.Unsafe (unsafePerformIO)
 import Foreign.Marshal
 import Data.Word
 import Data.Char
@@ -183,7 +184,7 @@ fromUTF xs = fromUTF' (map fromIntegral xs) where
 instance Binary Atom where
     get = do
         x <- getWord8
-        bs <- getBytes (fromIntegral x)
+        bs <- getByteString (fromIntegral x)
         return $ toAtom bs
     put a = do
         let bs = fromAtom a

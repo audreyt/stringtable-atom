@@ -296,13 +296,13 @@ update ::  (a -> Maybe a) -> Key -> AtomMap a -> AtomMap a
 update x y z = MkAtomMap (IM.update ( x) (fromAtom y) (fromAtomMap z))
 updateLookupWithKey ::  (Key -> a -> Maybe a) -> Key -> AtomMap a -> (Maybe a,AtomMap a)
 updateLookupWithKey x y z = (\(x, y) -> (x, MkAtomMap y)) (IM.updateLookupWithKey ((. unsafeIntToAtom) x) (fromAtom y) (fromAtomMap z))
-updateMax :: (a -> a) -> AtomMap a -> AtomMap a
+updateMax :: (a -> Maybe a) -> AtomMap a -> AtomMap a
 updateMax x y = MkAtomMap (IM.updateMax ( x) (fromAtomMap y))
-updateMaxWithKey :: (Key -> a -> a) -> AtomMap a -> AtomMap a
+updateMaxWithKey :: (Key -> a -> Maybe a) -> AtomMap a -> AtomMap a
 updateMaxWithKey x y = MkAtomMap (IM.updateMaxWithKey ((. unsafeIntToAtom) x) (fromAtomMap y))
-updateMin :: (a -> a) -> AtomMap a -> AtomMap a
+updateMin :: (a -> Maybe a) -> AtomMap a -> AtomMap a
 updateMin x y = MkAtomMap (IM.updateMin ( x) (fromAtomMap y))
-updateMinWithKey :: (Key -> a -> a) -> AtomMap a -> AtomMap a
+updateMinWithKey :: (Key -> a -> Maybe a) -> AtomMap a -> AtomMap a
 updateMinWithKey x y = MkAtomMap (IM.updateMinWithKey ((. unsafeIntToAtom) x) (fromAtomMap y))
 updateWithKey ::  (Key -> a -> Maybe a) -> Key -> AtomMap a -> AtomMap a
 updateWithKey x y z = MkAtomMap (IM.updateWithKey ((. unsafeIntToAtom) x) (fromAtom y) (fromAtomMap z))
@@ -325,6 +325,6 @@ deleteMax x = MkAtomMap (IM.deleteMax (fromAtomMap x))
 deleteMin :: AtomMap a -> AtomMap a
 deleteMin x = MkAtomMap (IM.deleteMin (fromAtomMap x))
 deleteFindMax :: AtomMap a -> (a, AtomMap a)
-deleteFindMax x = (\(x, y) -> (x, MkAtomMap y)) (IM.deleteFindMax (fromAtomMap x))
+deleteFindMax x = (\(x, y) -> (x, MkAtomMap y)) (let ((_,v),m) = IM.deleteFindMax (fromAtomMap x) in (v,m))
 deleteFindMin :: AtomMap a -> (a, AtomMap a)
-deleteFindMin x = (\(x, y) -> (x, MkAtomMap y)) (IM.deleteFindMin (fromAtomMap x))
+deleteFindMin x = (\(x, y) -> (x, MkAtomMap y)) (let ((_,v),m) = IM.deleteFindMin (fromAtomMap x) in (v,m))
