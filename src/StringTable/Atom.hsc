@@ -18,6 +18,7 @@ module StringTable.Atom(
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Internal as BS
 import qualified Data.ByteString.Unsafe as BS
+import qualified System.IO.Unsafe as Unsafe
 import Control.Monad
 import Data.Binary
 import Data.Binary.Get
@@ -40,27 +41,27 @@ class FromAtom a where
     fromAtomIO :: Atom -> IO a
 
     fromAtomIO a = return (fromAtom a)
-    fromAtom a = unsafePerformIO (fromAtomIO a)
+    fromAtom a = Unsafe.unsafePerformIO (fromAtomIO a)
 
 class ToAtom a where
     toAtom :: a -> Atom
     toAtomIO :: a -> IO Atom
 
     toAtomIO a = return (toAtom a)
-    toAtom a = unsafePerformIO (toAtomIO a)
+    toAtom a = Unsafe.unsafePerformIO (toAtomIO a)
 
 class HasHash a where
     hash32 :: a -> Word32
 
 instance HasHash Atom where
-    hash32 a = let (x,y) = fromAtom a :: CStringLen in unsafePerformIO $ hash2 0 x (fromIntegral y)
+    hash32 a = let (x,y) = fromAtom a :: CStringLen in Unsafe.unsafePerformIO $ hash2 0 x (fromIntegral y)
 
 instance HasHash BS.ByteString where
-    hash32 bs = unsafePerformIO $ do
+    hash32 bs = Unsafe.unsafePerformIO $ do
         BS.unsafeUseAsCStringLen bs $ \ (x,y) -> hash2 0 x (fromIntegral y)
 
 instance HasHash String where
-    hash32 s = unsafePerformIO $ withCStringLen s $ \ (x,y) -> hash2 0 x (fromIntegral y)
+    hash32 s = Unsafe.unsafePerformIO $ withCStringLen s $ \ (x,y) -> hash2 0 x (fromIntegral y)
 
 instance FromAtom (String -> String) where
     fromAtom x = shows (fromAtom x :: String)
@@ -112,7 +113,7 @@ instance FromAtom BS.ByteString where
 
 instance Monoid Atom where
     mempty = toAtom BS.empty
-    mappend x y = unsafePerformIO $ atomAppend x y
+    mappend x y = Unsafe.unsafePerformIO $ atomAppend x y
 
 instance Show Atom where
     showsPrec _ atom = (fromAtom atom ++)
@@ -130,7 +131,7 @@ unsafeIntToAtom :: Int -> Atom
 unsafeIntToAtom x = Atom (fromIntegral x)
 
 unsafeByteIndex :: Atom -> Int -> Word8
-unsafeByteIndex atom off = fromIntegral (unsafePerformIO $ peek (stPtr atom `advancePtr` off))
+unsafeByteIndex atom off = fromIntegral (Unsafe.unsafePerformIO $ peek (stPtr atom `advancePtr` off))
 
 foreign import ccall unsafe "stringtable_lookup" stAdd :: CString -> CInt -> IO Atom
 foreign import ccall unsafe "stringtable_ptr" stPtr :: Atom -> CString

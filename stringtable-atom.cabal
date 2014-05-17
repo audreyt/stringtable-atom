@@ -1,5 +1,5 @@
 Name:                stringtable-atom
-Version:             0.0.4
+Version:             0.0.7
 Homepage:            http://github.com/audreyt/stringtable-atom/
 Category:            Data, Pugs
 Synopsis:            Memoize Strings as Atoms for fast comparison and sorting, with maps and sets
@@ -8,19 +8,30 @@ License:             BSD3
 License-File:        LICENSE
 Author:              John Meacham
 Maintainer:          audreyt@audreyt.org
-Copyright:           John Meacham 2008, Audrey Tang 2008
-Exposed-modules:     StringTable.Atom StringTable.AtomMap StringTable.AtomSet
+Copyright:           John Meacham 2008, Audrey Tang 2008, 2014
 
-Build-Depends:       base, bytestring>=0.9.0.1, binary, containers
+Cabal-version:       >= 1.2.3
+Extra-source-files:  cbits/StringTable_cbits.h
+
 Build-Type:          Simple
-Tested-With:         GHC==6.8.2, GHC==6.8.3, GHC==6.10
+Tested-With:         GHC==6.8.2, GHC==6.8.3, GHC==6.10.1, GHC==6.12.1, GHC==7.8.2
 
-extensions:          ForeignFunctionInterface, TypeSynonymInstances,
-                     DeriveDataTypeable, FlexibleInstances,
-                     GeneralizedNewtypeDeriving
+Flag SybInBase
+    Description: syb was split from base version 4
+    Default: False
 
-c-sources:           cbits/StringTable_cbits.c
-extra-source-files:  cbits/StringTable_cbits.h
-include-dirs:        cbits
-cc-options:          -O2 -std=c99
-hs-source-dirs:      src
+Library
+    if flag(SybInBase)
+        Build-Depends: base>=3 && <4, bytestring>=0.9.0.1, binary, containers
+    else
+        Build-Depends: base>=4 && <5, bytestring>=0.9.0.1, binary, containers, syb
+        
+    Exposed-modules:    StringTable.Atom StringTable.AtomMap StringTable.AtomSet
+
+    Extensions:         ForeignFunctionInterface, TypeSynonymInstances,
+                        DeriveDataTypeable, FlexibleInstances,
+                        GeneralizedNewtypeDeriving
+    C-sources:           cbits/StringTable_cbits.c
+    Include-dirs:        cbits
+    Cc-options:          -std=c99
+    Hs-source-dirs:      src
